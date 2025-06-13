@@ -4,7 +4,7 @@
 </div>
 
 ## 우리 팀의 목표 (Our team's goal)
-- 예선 통과 ( 제발..!! )
+- 예선 통과 ( 제발!! )
 
 ## AWS DeepRacer란?
 ### AWS DeepRacer는 강화 학습으로 구동되는 완전 자율 주행 (1/18 비율의) 경주용 자동차임.
@@ -73,5 +73,5 @@ def reward_function(params):
     return float(reward)
 ```
 
-## 대회 결과 (경기대 제3회 AWS DeepRacer 경진대회)
-### 우승! 🏆
+## 대회 결과 [ 경기대 제3회 AWS DeepRacer 경진대회 ]
+### 우승! 🏆 (Team: Z1존끝판종결ZA)
