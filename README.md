@@ -4,7 +4,7 @@
 </div>
 
 ## 우리 팀의 목표 (Our team's goal)
-- 예선 통과 (제발..!!)
+- 예선 통과 ( 제발..!! )
 
 ## AWS DeepRacer란?
 ### AWS DeepRacer는 강화 학습으로 구동되는 완전 자율 주행 (1/18 비율의) 경주용 자동차임.
@@ -32,19 +32,46 @@
 - AWS DeepRacer 차량은 *회전이 가까워지면 가속 또는 제동* 후 **좌회전**, **우회전** 또는 **직진** 중 하나를 선택할 수 있다.
 - 이러한 동작은 조향 각도와 속도의 조합으로 정의되어 에이전트를 위한 옵션 메뉴(0~9)를 생성한다.
 - 예를 들어 0은 -30도 및 0.4m/s, 1은 -30도 및 0.8m/s, 2는 -15도 및 0.4m/s, 3은 -15도 및 0.8m/s, 3은 -15도 및 0.8m/s 등 9까지 나타낼 수 있다.
-0. -30도	0.4m/s
-1.	-30도	0.8m/s
-2.	-15도	0.4m/s
-3.	-15도	0.8m/s
-4.	0도	0.4m/s
-5.	0도	0.8m/s
-6.	15도	0.4m/s
-7.	15도	0.8m/s
-8.	30도	0.4m/s
-9.	30도	0.8m/s
 - 각도가 *음수*이면 차를 **오른쪽**으로 돌리고, *양수*이면 차를 **왼쪽**으로 돌리고, 0이면 바퀴가 똑바로 유지된다.
 ### 보상 함수(Reward Function)
 - 에이전트는 환경을 탐색하면서 가치 함수를 학습한다.
 - 가치 함수는 에이전트가 환경을 관찰한 후 취한 행동이 얼마나 좋은지 판단하는 데 도움이 된다.
 - 가치 함수는 AWS DeepRacer 콘솔에서 작성한 보상 함수를 사용하여 행동에 점수를 매긴다.
 - 예를 들어, AWS DeepRacer 콘솔의 센터 라인 따르기 샘플 보상 기능에서 좋은 행동은 에이전트를 트랙 중앙에 가깝게 유지하고 에이전트를 트랙 중앙에서 멀어지게 하는 잘못된 행동보다 높은 점수를 받게 하는 것이다.
+
+## 우리팀이 사용한 보상함수(RF)
+```python
+import math
+
+""" 트랙의 진행 방향과 차량의 현재 헤딩(heading)이
+    얼마나 일치하는지를 평가하는 보상 함수 """
+
+# (params)에 스텝마다 넘겨주는 상태 정보들이 딕셔너리 형태로 담겨 있음
+def reward_function(params):  
+    waypoints = params['waypoints'] # 트랙 위의 고정된 좌표 리스트 예) [(1,2),(3,4), ... ]
+    closest_waypoints = params['closest_waypoints'] # 차량에 가장 가까운 두 개의 waypoint 인덱스 값 [앞, 뒤]
+    heading = params['heading'] # 차량이 현재 바라보고 있는 방향(degree)
+
+    reward = 1.0
+
+    # 차량의 진행 방향을 계산하기 위한, 현재 위치 기준의
+    # 이전 waypoint와 다음 waypoint를 선언
+    next_point = waypoints[closest_waypoints[1]] # 다음 waypoint
+    prev_point = waypoints[closest_waypoints[0]] # 이전 waypoint
+
+    # 차량이 따라가야 할 진행 방향을 구하기 위한 기준
+    track_direction = math.atan2(next_point[1] - prev_point[1], next_point[0] - prev_point[0])
+    # Arctan(waypoint y의 차이, waypoint x의 차이) [각도의 라디안 단위]
+    track_direction = math.degrees(track_direction) # 라디안을 각도(degree)로 바꿈
+    direction_diff = abs(track_direction - heading) # 실제 차량이 바라보고 있는 값의 차이를 구함
+    if direction_diff > 180: # 180도 이상이면 반대 방향으로 도는게 효율적
+        direction_diff = 360 - direction_diff # 각도는 원형이기에 (360 - 차이)로 계산
+    DIRECTION_THRESHOLD = 10.0 # 방향의 임계값(기준각도)
+    if direction_diff > DIRECTION_THRESHOLD: # 10도 이상 차이나면
+        reward *= max(0.0, 1.0 - (direction_diff / 50)) # 각도 차이에 따라 보상값을 유연하게 깎아버림
+
+    return float(reward)
+```
+
+## 대회 결과 (경기대 제3회 AWS DeepRacer 경진대회)
+### 우승! 🏆
