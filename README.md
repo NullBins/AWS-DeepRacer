@@ -75,3 +75,4 @@ def reward_function(params):
 
 ## 대회 결과 [ 경기대 제3회 AWS DeepRacer 경진대회 ]
 ### 우승! 🏆 (Team: Z1존끝판종결ZA)
+> [![Video](http://img.youtube.com/vi/YPxOdy3E4a0/0.jpg)](https://www.youtube.com/watch?v=YPxOdy3E4a0)
